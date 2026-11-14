@@ -1,0 +1,346 @@
+
+{% extends 'quiz/base.html' %}
+
+{% block title %}Register - Quiz Portal{% endblock %}
+
+{% block content %}
+
+<style>
+    .register-wrapper {
+        min-height: 75vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        padding: 40px 16px;
+    }
+
+    .register-card {
+        width: 100%;
+        max-width: 490px;
+        background: #ffffff;
+        border: 1px solid #e8eaf5;
+        border-radius: 24px;
+        padding: 40px;
+        box-shadow: 0 15px 45px rgba(31, 41, 85, 0.08);
+        animation: registerFadeIn 0.5s ease;
+    }
+
+    .register-icon {
+        width: 68px;
+        height: 68px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 20px;
+        border-radius: 20px;
+        background: linear-gradient(135deg, #eef2ff, #f3e8ff);
+        color: #6366f1;
+        font-size: 27px;
+    }
+
+    .register-title {
+        text-align: center;
+        color: #172033;
+        font-size: 30px;
+        font-weight: 800;
+        letter-spacing: -0.8px;
+        margin: 0 0 9px;
+    }
+
+    .register-subtitle {
+        text-align: center;
+        color: #64748b;
+        font-size: 13px;
+        line-height: 1.7;
+        margin: 0 0 30px;
+    }
+
+    .register-form-group {
+        margin-bottom: 20px;
+    }
+
+    .register-label {
+        display: block;
+        color: #334155;
+        font-size: 13px;
+        font-weight: 650;
+        margin-bottom: 9px;
+    }
+
+    .register-input-wrapper {
+        position: relative;
+    }
+
+    .register-input-wrapper > i {
+        position: absolute;
+        left: 16px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: #94a3b8;
+        font-size: 14px;
+        transition: color 0.2s ease;
+        pointer-events: none;
+    }
+
+    .register-input-wrapper input {
+        width: 100%;
+        height: 51px;
+        padding: 0 15px 0 44px;
+        border: 1.5px solid #e2e8f0;
+        border-radius: 12px;
+        background: #f8fafc;
+        color: #172033;
+        font-size: 14px;
+        outline: none;
+        box-sizing: border-box;
+        transition: all 0.25s ease;
+    }
+
+    .register-input-wrapper input::placeholder {
+        color: #a0aec0;
+    }
+
+    .register-input-wrapper input:focus {
+        border-color: #6366f1;
+        background: #ffffff;
+        box-shadow: 0 0 0 4px rgba(99, 102, 241, 0.10);
+    }
+
+    .register-input-wrapper:focus-within > i {
+        color: #6366f1;
+    }
+
+    .register-error {
+        color: #dc2626;
+        font-size: 12px;
+        margin-top: 7px;
+        line-height: 1.5;
+    }
+
+    .register-error ul {
+        margin: 0;
+        padding-left: 18px;
+    }
+
+    .register-non-field-error {
+        color: #b91c1c;
+        background: #fef2f2;
+        border: 1px solid #fecaca;
+        padding: 12px 14px;
+        border-radius: 10px;
+        font-size: 13px;
+        margin-bottom: 20px;
+    }
+
+    .register-non-field-error ul {
+        margin: 0;
+        padding-left: 18px;
+    }
+
+    .register-submit {
+        width: 100%;
+        min-height: 52px;
+        border: none;
+        border-radius: 12px;
+        margin-top: 8px;
+        background: linear-gradient(135deg, #4f46e5, #9333ea);
+        color: #ffffff;
+        font-size: 14px;
+        font-weight: 750;
+        cursor: pointer;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 10px;
+        box-shadow: 0 7px 18px rgba(99, 102, 241, 0.23);
+        transition: all 0.25s ease;
+    }
+
+    .register-submit:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 11px 24px rgba(99, 102, 241, 0.32);
+    }
+
+    .register-submit:active {
+        transform: translateY(0);
+    }
+
+    .register-footer {
+        text-align: center;
+        margin-top: 26px;
+        padding-top: 22px;
+        border-top: 1px solid #eef0f6;
+        color: #64748b;
+        font-size: 13px;
+    }
+
+    .register-footer a {
+        color: #6366f1;
+        font-weight: 700;
+        text-decoration: none;
+        margin-left: 4px;
+        transition: color 0.2s ease;
+    }
+
+    .register-footer a:hover {
+        color: #9333ea;
+        text-decoration: underline;
+    }
+
+    .register-security {
+        text-align: center;
+        margin-top: 20px;
+        color: #94a3b8;
+        font-size: 11px;
+    }
+
+    .register-security i {
+        color: #10b981;
+        margin-right: 5px;
+    }
+
+    @keyframes registerFadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(18px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    @media (max-width: 480px) {
+        .register-card {
+            padding: 30px 22px;
+            border-radius: 19px;
+        }
+
+        .register-title {
+            font-size: 26px;
+        }
+
+        .register-wrapper {
+            padding: 25px 12px;
+        }
+    }
+</style>
+
+<div class="register-wrapper">
+
+    <div class="register-card">
+
+        <!-- Register Icon -->
+        <div class="register-icon">
+            <i class="fas fa-user-plus"></i>
+        </div>
+
+        <!-- Heading -->
+        <h1 class="register-title">Create Account</h1>
+
+        <p class="register-subtitle">
+            Join Quiz Portal to participate in quizzes,
+            track your scores and compete on the leaderboard.
+        </p>
+
+        <!-- Registration Form -->
+        <form method="POST" action="{% url 'quiz:register' %}">
+            {% csrf_token %}
+
+            <!-- Username -->
+            <div class="register-form-group">
+                <label class="register-label">Username</label>
+
+                <div class="register-input-wrapper">
+                    <i class="fas fa-user"></i>
+                    {{ form.username }}
+                </div>
+
+                {% if form.username.errors %}
+                    <div class="register-error">
+                        {{ form.username.errors }}
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Email -->
+            <div class="register-form-group">
+                <label class="register-label">Email Address</label>
+
+                <div class="register-input-wrapper">
+                    <i class="fas fa-envelope"></i>
+                    {{ form.email }}
+                </div>
+
+                {% if form.email.errors %}
+                    <div class="register-error">
+                        {{ form.email.errors }}
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Password -->
+            <div class="register-form-group">
+                <label class="register-label">Password</label>
+
+                <div class="register-input-wrapper">
+                    <i class="fas fa-lock"></i>
+                    {{ form.password }}
+                </div>
+
+                {% if form.password.errors %}
+                    <div class="register-error">
+                        {{ form.password.errors }}
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- Confirm Password -->
+            <div class="register-form-group">
+                <label class="register-label">Confirm Password</label>
+
+                <div class="register-input-wrapper">
+                    <i class="fas fa-shield-alt"></i>
+                    {{ form.confirm_password }}
+                </div>
+
+                {% if form.confirm_password.errors %}
+                    <div class="register-error">
+                        {{ form.confirm_password.errors }}
+                    </div>
+                {% endif %}
+            </div>
+
+            <!-- General Form Errors -->
+            {% if form.non_field_errors %}
+                <div class="register-non-field-error">
+                    <i class="fas fa-exclamation-circle"></i>
+                    {{ form.non_field_errors }}
+                </div>
+            {% endif %}
+
+            <!-- Submit -->
+            <button type="submit" class="register-submit">
+                <i class="fas fa-user-check"></i>
+                Register &amp; Log In
+            </button>
+
+        </form>
+
+        <!-- Login Link -->
+        <div class="register-footer">
+            Already have an account?
+            <a href="{% url 'quiz:login' %}">Login here</a>
+        </div>
+
+        <!-- Security Notice -->
+        <div class="register-security">
+            <i class="fas fa-shield-alt"></i>
+            Your information is safe and secure.
+        </div>
+
+    </div>
+
+</div>
+
+{% endblock %}

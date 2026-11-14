@@ -1,0 +1,361 @@
+
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>{% block title %}Quiz Portal{% endblock %}</title>
+
+    <meta name="description" content="An interactive, premium Quiz Portal for testing and ranking your skills.">
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.2/css/all.min.css">
+
+    <!-- Main Style -->
+    <link rel="stylesheet" href="{% static 'quiz/css/styles.css' %}">
+
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #8b5cf6;
+            --accent: #06b6d4;
+            --background: #f5f7ff;
+            --surface: #ffffff;
+            --text-primary: #172033;
+            --text-secondary: #64748b;
+            --border: #e8eaf3;
+            --success: #10b981;
+            --error: #ef4444;
+            --header-height: 76px;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Outfit', sans-serif;
+            background: var(--background);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Navbar */
+        header {
+            min-height: var(--header-height);
+            padding: 0 7%;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(18px);
+            -webkit-backdrop-filter: blur(18px);
+            border-bottom: 1px solid var(--border);
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(15, 23, 42, 0.035);
+        }
+
+        .logo {
+            text-decoration: none;
+            font-size: 27px;
+            font-weight: 800;
+            letter-spacing: -1.2px;
+            background: linear-gradient(135deg, #4f46e5, #9333ea);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .logo::before {
+            content: '\f059';
+            font-family: "Font Awesome 6 Free";
+            font-weight: 900;
+            color: #6366f1;
+            font-size: 27px;
+        }
+
+        .nav-links {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-link {
+            text-decoration: none;
+            color: #64748b;
+            font-size: 14px;
+            font-weight: 600;
+            padding: 10px 15px;
+            border-radius: 10px;
+            transition: all 0.25s ease;
+            white-space: nowrap;
+        }
+
+        .nav-link:hover {
+            color: var(--primary);
+            background: #eef2ff;
+        }
+
+        .nav-btn {
+            text-decoration: none;
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+            padding: 11px 23px;
+            border-radius: 10px;
+            background: linear-gradient(135deg, #6366f1, #8b5cf6);
+            box-shadow: 0 5px 15px rgba(99, 102, 241, 0.25);
+            transition: all 0.25s ease;
+        }
+
+        .nav-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 22px rgba(99, 102, 241, 0.35);
+        }
+
+        /* Main Content */
+        main {
+            width: 100%;
+            max-width: 1450px;
+            padding: 40px 6%;
+            margin: 0 auto;
+            flex: 1;
+        }
+
+        /* Messages */
+        .messages {
+            margin-bottom: 25px;
+        }
+
+        .alert-message {
+            padding: 15px 20px;
+            margin-bottom: 12px;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 500;
+            border: 1px solid transparent;
+            animation: slideDown 0.35s ease;
+        }
+
+        .alert-success {
+            background: #ecfdf5;
+            color: #047857;
+            border-color: #a7f3d0;
+        }
+
+        .alert-error,
+        .alert-danger {
+            background: #fef2f2;
+            color: #b91c1c;
+            border-color: #fecaca;
+        }
+
+        .alert-warning {
+            background: #fffbeb;
+            color: #b45309;
+            border-color: #fde68a;
+        }
+
+        .alert-info {
+            background: #eff6ff;
+            color: #1d4ed8;
+            border-color: #bfdbfe;
+        }
+
+        @keyframes slideDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Footer */
+        footer {
+            background: #111827;
+            color: #94a3b8;
+            text-align: center;
+            padding: 25px 20px;
+            margin-top: auto;
+            border-top: 3px solid #6366f1;
+        }
+
+        footer p {
+            font-size: 13px;
+            line-height: 1.7;
+        }
+
+        /* Responsive */
+        @media (max-width: 900px) {
+            header {
+                padding: 0 4%;
+            }
+
+            .nav-links {
+                gap: 3px;
+            }
+
+            .nav-link {
+                padding: 9px 10px;
+                font-size: 13px;
+            }
+        }
+
+        @media (max-width: 600px) {
+            :root {
+                --header-height: auto;
+            }
+
+            header {
+                padding: 16px 5%;
+                flex-direction: column;
+                gap: 14px;
+            }
+
+            .logo {
+                font-size: 25px;
+            }
+
+            .nav-links {
+                width: 100%;
+                justify-content: center;
+                flex-wrap: wrap;
+                gap: 5px;
+            }
+
+            .nav-link {
+                padding: 8px 10px;
+                font-size: 12px;
+            }
+
+            .nav-btn {
+                padding: 9px 15px;
+                font-size: 12px;
+            }
+
+            main {
+                padding: 25px 5%;
+            }
+
+            footer {
+                padding: 20px 15px;
+            }
+        }
+    </style>
+
+    {% block extra_css %}{% endblock %}
+</head>
+
+<body data-theme="light">
+
+    <!-- Navigation -->
+    <header>
+
+        <a href="{% url 'quiz:dashboard' %}" class="logo">
+            QuizPortal
+        </a>
+
+        <div class="nav-links">
+
+            {% if user.is_authenticated %}
+
+                <a href="{% url 'quiz:dashboard' %}" class="nav-link">
+                    <i class="fas fa-house"></i> Dashboard
+                </a>
+
+                <a href="{% url 'quiz:leaderboard' %}" class="nav-link">
+                    <i class="fas fa-trophy"></i> Leaderboard
+                </a>
+
+                <a href="{% url 'quiz:profile' %}" class="nav-link">
+                    <i class="fas fa-user-circle"></i> Profile
+                </a>
+
+                {% if user.is_staff %}
+                    <a href="/admin/" class="nav-link" target="_blank">
+                        <i class="fas fa-shield-alt"></i> Admin
+                    </a>
+                {% endif %}
+
+                <span class="nav-link" style="color: var(--text-primary); font-weight: 600;">
+                    <i class="fas fa-user"></i> Hi, {{ user.username }}
+                </span>
+
+                <a href="{% url 'quiz:logout' %}" class="nav-link" style="color: var(--error);">
+                    <i class="fas fa-sign-out-alt"></i> Logout
+                </a>
+
+            {% else %}
+
+                <a href="{% url 'quiz:login' %}" class="nav-link">
+                    Login
+                </a>
+
+                <a href="{% url 'quiz:register' %}" class="nav-btn">
+                    <i class="fas fa-user-plus"></i> Register
+                </a>
+
+            {% endif %}
+
+        </div>
+
+    </header>
+
+    <!-- Main Content -->
+    <main>
+
+        {% if messages %}
+            <div class="messages">
+
+                {% for message in messages %}
+                    <div class="alert-message alert-{{ message.tags }}">
+                        <i class="fas fa-info-circle"></i>
+                        {{ message }}
+                    </div>
+                {% endfor %}
+
+            </div>
+        {% endif %}
+
+        {% block content %}{% endblock %}
+
+    </main>
+
+    <!-- Footer -->
+    <footer>
+        <p>
+            &copy; 2026 <strong style="color: #ffffff;">QuizPortal</strong>.
+            All rights reserved.
+            Designed with <i class="fas fa-heart" style="color: #f87171;"></i>
+            for smarter learning.
+        </p>
+    </footer>
+
+    {% block extra_js %}{% endblock %}
+
+</body>
+</html>

@@ -1,0 +1,554 @@
+
+{% extends 'quiz/base.html' %}
+
+{% block title %}Leaderboard - Quiz Portal{% endblock %}
+
+{% block content %}
+
+<style>
+    /* Page Header */
+    .leaderboard-header {
+        background: linear-gradient(125deg, #312e81, #4f46e5, #7c3aed);
+        border-radius: 22px;
+        padding: 32px;
+        color: white;
+        margin-bottom: 28px;
+        position: relative;
+        overflow: hidden;
+        box-shadow: 0 12px 30px rgba(79, 70, 229, 0.18);
+    }
+
+    .leaderboard-header::after {
+        content: "\f091";
+        font-family: "Font Awesome 6 Free";
+        font-weight: 900;
+        position: absolute;
+        right: 45px;
+        top: 50%;
+        transform: translateY(-50%);
+        font-size: 100px;
+        color: rgba(255,255,255,0.10);
+    }
+
+    .leaderboard-header h1 {
+        font-size: 30px;
+        font-weight: 800;
+        margin-bottom: 9px;
+        position: relative;
+        z-index: 1;
+    }
+
+    .leaderboard-header p {
+        color: rgba(255,255,255,0.8);
+        font-size: 14px;
+        position: relative;
+        z-index: 1;
+    }
+
+    /* Filter Section */
+    .filter-section {
+        margin-top: 25px;
+        position: relative;
+        z-index: 2;
+    }
+
+    .filter-label {
+        display: block;
+        font-size: 13px;
+        font-weight: 700;
+        margin-bottom: 12px;
+        color: rgba(255,255,255,0.9);
+    }
+
+    .filter-list {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 9px;
+    }
+
+    .filter-link {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        padding: 9px 15px;
+        border-radius: 30px;
+        text-decoration: none;
+        font-size: 12px;
+        font-weight: 600;
+        color: rgba(255,255,255,0.9);
+        background: rgba(255,255,255,0.12);
+        border: 1px solid rgba(255,255,255,0.18);
+        transition: all 0.25s ease;
+    }
+
+    .filter-link:hover,
+    .filter-link.active {
+        background: #ffffff;
+        color: #4f46e5;
+        border-color: #ffffff;
+        transform: translateY(-2px);
+    }
+
+    /* Table Card */
+    .leaderboard-container {
+        background: #ffffff;
+        border: 1px solid #e8eaf3;
+        border-radius: 20px;
+        padding: 25px;
+        box-shadow: 0 8px 30px rgba(31,38,135,0.05);
+    }
+
+    .table-heading {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 15px;
+        margin-bottom: 22px;
+    }
+
+    .table-heading h2 {
+        font-size: 21px;
+        font-weight: 800;
+        color: #172033;
+    }
+
+    .table-heading p {
+        font-size: 12px;
+        color: #94a3b8;
+        margin-top: 5px;
+    }
+
+    .table-heading-icon {
+        width: 46px;
+        height: 46px;
+        min-width: 46px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 14px;
+        background: #eef2ff;
+        color: #6366f1;
+        font-size: 19px;
+    }
+
+    /* Responsive Table */
+    .table-wrapper {
+        width: 100%;
+        overflow-x: auto;
+        border-radius: 13px;
+        border: 1px solid #e8eaf3;
+    }
+
+    .leaderboard-table {
+        width: 100%;
+        min-width: 850px;
+        border-collapse: collapse;
+        margin: 0;
+        background: white;
+    }
+
+    .leaderboard-table th {
+        padding: 16px 15px;
+        text-align: left;
+        background: #f5f7ff;
+        color: #64748b;
+        font-size: 11px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.7px;
+        white-space: nowrap;
+        border-bottom: 1px solid #e8eaf3;
+    }
+
+    .leaderboard-table td {
+        padding: 16px 15px;
+        font-size: 13px;
+        color: #64748b;
+        border-bottom: 1px solid #f0f2f8;
+        vertical-align: middle;
+    }
+
+    .leaderboard-table tbody tr {
+        transition: background 0.2s ease;
+    }
+
+    .leaderboard-table tbody tr:hover {
+        background: #f8faff;
+    }
+
+    .leaderboard-table tbody tr:last-child td {
+        border-bottom: none;
+    }
+
+    /* Current User */
+    .leaderboard-table tbody tr.current-user {
+        background: #eef2ff;
+        box-shadow: inset 4px 0 0 #6366f1;
+    }
+
+    .leaderboard-table tbody tr.current-user:hover {
+        background: #e8edff;
+    }
+
+    .current-user-tag {
+        display: inline-block;
+        margin-left: 5px;
+        padding: 3px 7px;
+        background: #dbeafe;
+        color: #4338ca;
+        border-radius: 5px;
+        font-size: 9px;
+        font-weight: 800;
+        vertical-align: middle;
+    }
+
+    /* Participant */
+    .participant-name {
+        color: #172033;
+        font-weight: 700;
+        font-size: 13px;
+        margin-bottom: 4px;
+        white-space: nowrap;
+    }
+
+    .participant-username {
+        color: #94a3b8;
+        font-size: 11px;
+    }
+
+    /* Rank */
+    .rank-badge {
+        width: 36px;
+        height: 36px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 11px;
+        background: #f1f5f9;
+        color: #64748b;
+        font-size: 13px;
+        font-weight: 800;
+    }
+
+    .rank-1 {
+        background: #fef3c7;
+        color: #b45309;
+        box-shadow: 0 3px 10px rgba(245,158,11,0.15);
+    }
+
+    .rank-2 {
+        background: #e2e8f0;
+        color: #475569;
+    }
+
+    .rank-3 {
+        background: #ffedd5;
+        color: #c2410c;
+    }
+
+    /* Score */
+    .score-badge {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 7px 11px;
+        background: #ecfdf5;
+        color: #059669;
+        border-radius: 8px;
+        font-weight: 800;
+        font-size: 12px;
+        white-space: nowrap;
+    }
+
+    /* Date */
+    .date-text {
+        white-space: nowrap;
+        font-size: 12px;
+        color: #64748b;
+    }
+
+    /* Empty State */
+    .empty-state {
+        text-align: center;
+        padding: 65px 20px;
+    }
+
+    .empty-icon {
+        width: 75px;
+        height: 75px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 18px;
+        border-radius: 22px;
+        background: #eef2ff;
+        color: #6366f1;
+        font-size: 30px;
+    }
+
+    .empty-state h3 {
+        font-size: 20px;
+        color: #172033;
+        font-weight: 800;
+        margin-bottom: 9px;
+    }
+
+    .empty-state p {
+        font-size: 13px;
+        color: #94a3b8;
+    }
+
+    /* Scrollbar */
+    .table-wrapper::-webkit-scrollbar {
+        height: 7px;
+    }
+
+    .table-wrapper::-webkit-scrollbar-track {
+        background: #f1f5f9;
+        border-radius: 10px;
+    }
+
+    .table-wrapper::-webkit-scrollbar-thumb {
+        background: #c7d2fe;
+        border-radius: 10px;
+    }
+
+    @media(max-width: 600px) {
+        .leaderboard-header {
+            padding: 25px 20px;
+        }
+
+        .leaderboard-header h1 {
+            font-size: 24px;
+        }
+
+        .leaderboard-header::after {
+            right: 15px;
+            font-size: 65px;
+        }
+
+        .leaderboard-container {
+            padding: 16px;
+        }
+
+        .table-heading h2 {
+            font-size: 18px;
+        }
+
+        .filter-link {
+            font-size: 11px;
+            padding: 8px 11px;
+        }
+    }
+</style>
+
+<!-- Leaderboard Header -->
+<div class="leaderboard-header">
+
+    <h1>
+        <i class="fas fa-trophy"></i>
+        Leaderboard
+    </h1>
+
+    <p>
+        Discover the top performers and see where you stand among participants.
+    </p>
+
+    <!-- Quiz Filters -->
+    <div class="filter-section">
+
+        <span class="filter-label">
+            <i class="fas fa-filter"></i>
+            FILTER BY QUIZ
+        </span>
+
+        <div class="filter-list">
+
+            <a href="{% url 'quiz:leaderboard' %}"
+               class="filter-link {% if not selected_quiz %}active{% endif %}">
+
+                <i class="fas fa-layer-group"></i>
+                All Quizzes
+
+            </a>
+
+            {% for quiz in quizzes %}
+
+                <a href="{% url 'quiz:quiz_leaderboard' quiz.id %}"
+                   class="filter-link {% if selected_quiz == quiz %}active{% endif %}">
+
+                    <i class="fas fa-book-open"></i>
+                    {{ quiz.title }}
+
+                </a>
+
+            {% endfor %}
+
+        </div>
+
+    </div>
+
+</div>
+
+<!-- Leaderboard Table -->
+<div class="leaderboard-container">
+
+    <div class="table-heading">
+
+        <div>
+            <h2>
+                <i class="fas fa-ranking-star" style="color:#6366f1;"></i>
+
+                {% if selected_quiz %}
+                    {{ selected_quiz.title }} Standings
+                {% else %}
+                    Recent Top Scores
+                {% endif %}
+
+            </h2>
+
+            <p>
+                <i class="fas fa-chart-line"></i>
+                Participant rankings based on quiz performance
+            </p>
+        </div>
+
+        <div class="table-heading-icon">
+            <i class="fas fa-award"></i>
+        </div>
+
+    </div>
+
+    <div class="table-wrapper">
+
+        <table class="leaderboard-table">
+
+            <thead>
+                <tr>
+                    <th style="width:75px;">Rank</th>
+                    <th>Participant</th>
+                    <th>Institution</th>
+                    <th>Class</th>
+
+                    {% if not selected_quiz %}
+                        <th>Quiz Title</th>
+                    {% endif %}
+
+                    <th style="text-align:right;">Score</th>
+                    <th>Date Taken</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+                {% for entry in attempts %}
+
+                    <tr {% if entry.participant.user == request.user %}class="current-user"{% endif %}>
+
+                        <!-- Rank -->
+                        <td>
+                            <span class="rank-badge {% if forloop.counter <= 3 %}rank-{{ forloop.counter }}{% endif %}">
+
+                                {% if forloop.counter == 1 %}
+                                    <i class="fas fa-crown"></i>
+                                {% elif forloop.counter == 2 %}
+                                    <i class="fas fa-medal"></i>
+                                {% elif forloop.counter == 3 %}
+                                    <i class="fas fa-medal"></i>
+                                {% else %}
+                                    {{ forloop.counter }}
+                                {% endif %}
+
+                            </span>
+                        </td>
+
+                        <!-- Participant -->
+                        <td>
+
+                            <div class="participant-name">
+
+                                {{ entry.participant.name }}
+
+                                {% if entry.participant.user == request.user %}
+                                    <span class="current-user-tag">YOU</span>
+                                {% endif %}
+
+                            </div>
+
+                            <div class="participant-username">
+                                @{{ entry.participant.user.username }}
+                            </div>
+
+                        </td>
+
+                        <!-- Institution -->
+                        <td>
+                            {{ entry.participant.institution }}
+                        </td>
+
+                        <!-- Class -->
+                        <td>
+                            {{ entry.participant.classroom }}
+                        </td>
+
+                        <!-- Quiz Title -->
+                        {% if not selected_quiz %}
+                            <td style="font-weight:600; color:#334155;">
+                                {{ entry.quiz.title }}
+                            </td>
+                        {% endif %}
+
+                        <!-- Score -->
+                        <td style="text-align:right;">
+
+                            <span class="score-badge">
+                                <i class="fas fa-check-circle"></i>
+                                {{ entry.score }} / {{ entry.total_questions }}
+                            </span>
+
+                        </td>
+
+                        <!-- Date -->
+                        <td>
+                            <span class="date-text">
+                                <i class="far fa-calendar-alt"></i>
+                                {{ entry.completed_at|date:"M d, Y h:i A" }}
+                            </span>
+                        </td>
+
+                    </tr>
+
+                {% empty %}
+
+                    <tr>
+                        <td colspan="{% if selected_quiz %}6{% else %}7{% endif %}">
+
+                            <div class="empty-state">
+
+                                <div class="empty-icon">
+                                    <i class="fas fa-trophy"></i>
+                                </div>
+
+                                <h3>No Rankings Available</h3>
+
+                                <p>
+                                    No attempts have been recorded yet.
+                                    Be the first to take a quiz!
+                                </p>
+
+                            </div>
+
+                        </td>
+                    </tr>
+
+                {% endfor %}
+
+            </tbody>
+
+        </table>
+
+    </div>
+
+</div>
+
+{% endblock %}

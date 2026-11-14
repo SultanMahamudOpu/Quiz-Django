@@ -1,0 +1,584 @@
+
+{% extends 'quiz/base.html' %}
+
+{% block title %}Dashboard - Quiz Portal{% endblock %}
+
+{% block content %}
+
+<style>
+    /* Dashboard Welcome */
+    .welcome-card {
+        position: relative;
+        overflow: hidden;
+        padding: 38px 40px;
+        margin-bottom: 32px;
+        border-radius: 22px;
+        background: linear-gradient(125deg, #312e81 0%, #4f46e5 55%, #7c3aed 100%);
+        color: #ffffff;
+        box-shadow: 0 12px 35px rgba(79, 70, 229, 0.20);
+    }
+
+    .welcome-card::before {
+        content: "";
+        position: absolute;
+        width: 260px;
+        height: 260px;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.08);
+        right: -60px;
+        top: -110px;
+    }
+
+    .welcome-card::after {
+        content: "";
+        position: absolute;
+        width: 180px;
+        height: 180px;
+        border-radius: 50%;
+        background: rgba(255,255,255,0.07);
+        right: 150px;
+        bottom: -120px;
+    }
+
+    .welcome-content {
+        position: relative;
+        z-index: 1;
+    }
+
+    .welcome-label {
+        display: inline-block;
+        padding: 6px 13px;
+        border-radius: 30px;
+        background: rgba(255,255,255,0.15);
+        font-size: 12px;
+        font-weight: 600;
+        letter-spacing: 0.7px;
+        margin-bottom: 15px;
+    }
+
+    .welcome-card h1 {
+        font-size: 32px;
+        font-weight: 800;
+        letter-spacing: -0.8px;
+        margin-bottom: 10px;
+    }
+
+    .welcome-card p {
+        color: rgba(255,255,255,0.82);
+        font-size: 15px;
+        line-height: 1.8;
+    }
+
+    /* Statistics */
+    .stats-bar {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 22px;
+        margin-bottom: 42px;
+    }
+
+    .stat-box {
+        position: relative;
+        overflow: hidden;
+        background: #ffffff;
+        border: 1px solid #e9eaf5;
+        border-radius: 18px;
+        padding: 25px 28px;
+        display: flex;
+        align-items: center;
+        gap: 20px;
+        box-shadow: 0 5px 20px rgba(15,23,42,0.035);
+        transition: all 0.3s ease;
+    }
+
+    .stat-box:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 12px 28px rgba(99,102,241,0.10);
+    }
+
+    .stat-icon {
+        width: 58px;
+        height: 58px;
+        min-width: 58px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 16px;
+        font-size: 23px;
+    }
+
+    .stat-icon.purple {
+        background: #eef2ff;
+        color: #6366f1;
+    }
+
+    .stat-icon.cyan {
+        background: #ecfeff;
+        color: #0891b2;
+    }
+
+    .stat-value {
+        font-size: 29px;
+        font-weight: 800;
+        color: #172033;
+        line-height: 1.2;
+    }
+
+    .stat-label {
+        color: #64748b;
+        font-size: 13px;
+        font-weight: 500;
+        margin-top: 5px;
+    }
+
+    /* Section Heading */
+    .section-heading {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 22px;
+    }
+
+    .section-heading h2 {
+        font-size: 25px;
+        font-weight: 800;
+        color: #172033;
+        letter-spacing: -0.5px;
+    }
+
+    .section-heading p {
+        color: #94a3b8;
+        font-size: 13px;
+        margin-top: 5px;
+    }
+
+    /* Quiz Grid */
+    .quiz-list {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 22px;
+    }
+
+    .quiz-card {
+        position: relative;
+        display: flex;
+        flex-direction: column;
+        background: #ffffff;
+        border: 1px solid #e8eaf3;
+        border-radius: 19px;
+        padding: 25px;
+        transition: all 0.3s ease;
+        box-shadow: 0 5px 20px rgba(15,23,42,0.035);
+    }
+
+    .quiz-card:hover {
+        transform: translateY(-6px);
+        border-color: #c7d2fe;
+        box-shadow: 0 15px 35px rgba(79,70,229,0.10);
+    }
+
+    .quiz-card-top {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 12px;
+        margin-bottom: 15px;
+    }
+
+    .quiz-icon {
+        width: 48px;
+        height: 48px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: linear-gradient(135deg, #eef2ff, #f3e8ff);
+        color: #6366f1;
+        font-size: 20px;
+        border-radius: 14px;
+    }
+
+    .quiz-title {
+        font-size: 19px;
+        font-weight: 700;
+        color: #1e293b;
+        margin-bottom: 9px;
+        line-height: 1.4;
+    }
+
+    .quiz-desc {
+        color: #64748b;
+        font-size: 13px;
+        line-height: 1.7;
+        margin-bottom: 20px;
+        min-height: 44px;
+    }
+
+    .quiz-info {
+        background: #f8faff;
+        border: 1px solid #eef0f7;
+        border-radius: 13px;
+        padding: 15px;
+        margin-bottom: 20px;
+    }
+
+    .quiz-info-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        font-size: 13px;
+        color: #64748b;
+        margin-bottom: 11px;
+    }
+
+    .quiz-info-row:last-child {
+        margin-bottom: 0;
+    }
+
+    .quiz-info-row strong {
+        color: #334155;
+        font-weight: 700;
+    }
+
+    .score-highlight {
+        color: #059669 !important;
+    }
+
+    .position-highlight {
+        color: #6366f1 !important;
+    }
+
+    /* Quiz Footer */
+    .quiz-meta {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        margin-top: auto;
+        padding-top: 17px;
+        border-top: 1px solid #eef0f5;
+    }
+
+    .quiz-badge {
+        padding: 7px 13px;
+        border-radius: 30px;
+        font-size: 11px;
+        font-weight: 700;
+        letter-spacing: 0.3px;
+    }
+
+    .badge-taken {
+        background: #ecfdf5;
+        color: #059669;
+    }
+
+    .badge-new {
+        background: #eef2ff;
+        color: #4f46e5;
+    }
+
+    .quiz-action {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 8px;
+        padding: 10px 17px;
+        border-radius: 10px;
+        text-decoration: none;
+        color: #ffffff;
+        font-size: 12px;
+        font-weight: 700;
+        background: linear-gradient(135deg, #6366f1, #8b5cf6);
+        box-shadow: 0 4px 12px rgba(99,102,241,0.20);
+        transition: all 0.25s ease;
+    }
+
+    .quiz-action:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 7px 17px rgba(99,102,241,0.30);
+    }
+
+    /* Empty State */
+    .empty-state {
+        grid-column: 1 / -1;
+        text-align: center;
+        padding: 65px 25px;
+        background: #ffffff;
+        border: 1px dashed #cbd5e1;
+        border-radius: 20px;
+    }
+
+    .empty-icon {
+        width: 75px;
+        height: 75px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin: 0 auto 20px;
+        border-radius: 22px;
+        background: #eef2ff;
+        color: #6366f1;
+        font-size: 30px;
+    }
+
+    .empty-state h3 {
+        font-size: 21px;
+        font-weight: 700;
+        color: #1e293b;
+        margin-bottom: 10px;
+    }
+
+    .empty-state p {
+        color: #64748b;
+        font-size: 14px;
+        margin-bottom: 22px;
+    }
+
+    .empty-admin-btn {
+        display: inline-flex;
+        padding: 12px 22px;
+        background: linear-gradient(135deg, #6366f1, #8b5cf6);
+        color: #ffffff;
+        text-decoration: none;
+        border-radius: 10px;
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    @media(max-width: 768px) {
+        .quiz-list {
+            grid-template-columns: 1fr;
+        }
+
+        .welcome-card {
+            padding: 30px 25px;
+        }
+
+        .welcome-card h1 {
+            font-size: 26px;
+        }
+
+        .stats-bar {
+            gap: 12px;
+        }
+
+        .stat-box {
+            padding: 18px;
+            gap: 12px;
+        }
+
+        .stat-icon {
+            width: 45px;
+            height: 45px;
+            min-width: 45px;
+            font-size: 18px;
+        }
+
+        .stat-value {
+            font-size: 23px;
+        }
+    }
+
+    @media(max-width: 480px) {
+        .stats-bar {
+            grid-template-columns: 1fr;
+        }
+
+        .welcome-card h1 {
+            font-size: 23px;
+        }
+
+        .welcome-card p {
+            font-size: 13px;
+        }
+
+        .section-heading h2 {
+            font-size: 22px;
+        }
+
+        .quiz-card {
+            padding: 19px;
+        }
+
+        .quiz-meta {
+            flex-wrap: wrap;
+        }
+    }
+</style>
+
+<!-- Welcome Banner -->
+<div class="welcome-card">
+    <div class="welcome-content">
+
+        <span class="welcome-label">
+            <i class="fas fa-sparkles"></i> YOUR LEARNING SPACE
+        </span>
+
+        <h1>Welcome, {{ participant.name }} 👋</h1>
+
+        <p>
+            <i class="fas fa-graduation-cap"></i>
+            {{ participant.institution }}
+            &nbsp; • &nbsp;
+            <i class="fas fa-book-open"></i>
+            Class {{ participant.classroom }}
+            &nbsp; • &nbsp;
+            {{ participant.gender }}, {{ participant.age }} years old
+        </p>
+
+    </div>
+</div>
+
+<!-- Statistics Dashboard -->
+<div class="stats-bar">
+
+    <div class="stat-box">
+
+        <div class="stat-icon purple">
+            <i class="fas fa-clipboard-check"></i>
+        </div>
+
+        <div>
+            <div class="stat-value">{{ total_attempts }}</div>
+            <div class="stat-label">Quizzes Played</div>
+        </div>
+
+    </div>
+
+    <div class="stat-box">
+
+        <div class="stat-icon cyan">
+            <i class="fas fa-chart-line"></i>
+        </div>
+
+        <div>
+            <div class="stat-value">{{ avg_score }}</div>
+            <div class="stat-label">Average Score</div>
+        </div>
+
+    </div>
+
+</div>
+
+<!-- Available Quizzes -->
+<div class="section-heading">
+    <div>
+        <h2><i class="fas fa-layer-group" style="color:#6366f1;"></i> Available Quizzes</h2>
+        <p>Explore quizzes and challenge your knowledge.</p>
+    </div>
+</div>
+
+<div class="quiz-list">
+
+    {% for item in quiz_data %}
+
+        <div class="quiz-card">
+
+            <div class="quiz-card-top">
+                <div class="quiz-icon">
+                    <i class="fas fa-brain"></i>
+                </div>
+
+                {% if item.has_taken %}
+                    <span class="quiz-badge badge-taken">
+                        <i class="fas fa-check-circle"></i> COMPLETED
+                    </span>
+                {% else %}
+                    <span class="quiz-badge badge-new">
+                        <i class="fas fa-star"></i> NEW
+                    </span>
+                {% endif %}
+            </div>
+
+            <div class="quiz-title">
+                {{ item.quiz.title }}
+            </div>
+
+            <div class="quiz-desc">
+                {{ item.quiz.description }}
+            </div>
+
+            <div class="quiz-info">
+
+                <div class="quiz-info-row">
+                    <span><i class="fas fa-question-circle"></i> Total Questions</span>
+                    <strong>{{ item.total_questions }}</strong>
+                </div>
+
+                {% if item.has_taken %}
+
+                    <div class="quiz-info-row">
+                        <span><i class="fas fa-medal"></i> Best Score</span>
+                        <strong class="score-highlight">
+                            {{ item.best_score }}/{{ item.total_questions }}
+                        </strong>
+                    </div>
+
+                    <div class="quiz-info-row">
+                        <span><i class="fas fa-trophy"></i> Leaderboard Position</span>
+                        <strong class="position-highlight">
+                            #{{ item.position }}
+                        </strong>
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+            <div class="quiz-meta">
+
+                {% if item.has_taken %}
+
+                    <span class="quiz-badge badge-taken">
+                        <i class="fas fa-check"></i> Taken
+                    </span>
+
+                    <a href="{% url 'quiz:take_quiz' item.quiz.id %}" class="quiz-action">
+                        <i class="fas fa-redo"></i> Retake Quiz
+                    </a>
+
+                {% else %}
+
+                    <span class="quiz-badge badge-new">
+                        <i class="fas fa-bolt"></i> Ready to Start
+                    </span>
+
+                    <a href="{% url 'quiz:take_quiz' item.quiz.id %}" class="quiz-action">
+                        Start Quiz <i class="fas fa-arrow-right"></i>
+                    </a>
+
+                {% endif %}
+
+            </div>
+
+        </div>
+
+    {% empty %}
+
+        <div class="empty-state">
+
+            <div class="empty-icon">
+                <i class="fas fa-folder-open"></i>
+            </div>
+
+            <h3>No Quizzes Available Yet</h3>
+
+            <p>
+                There are currently no quizzes available.
+                Please check back later!
+            </p>
+
+            {% if user.is_staff %}
+                <a href="/admin/quiz/quiz/add/" class="empty-admin-btn" target="_blank">
+                    <i class="fas fa-plus-circle"></i>
+                    &nbsp; Add a Quiz
+                </a>
+            {% endif %}
+
+        </div>
+
+    {% endfor %}
+
+</div>
+
+{% endblock %}
